@@ -9,7 +9,7 @@
 
 # RBLTracker Nagios Plugin
 
-This is a very simple Nagios plugin, written in bash, to integrate with the RBLTracker public API. This tool uses the command line curl tool to make an HTTPs GET request to a specific Nagios formatted API URL.
+This is a very simple Nagios plugin, written in bash, to integrate with the RBLTracker public API. This tool uses the command line `curl` tool to make an HTTPs GET request to a specific Nagios formatted API URL.
 
 This script returns:
 
@@ -20,28 +20,28 @@ This script returns:
 
 ## Installation
 
-1) copy check_rbltracker.sh into your Nagios plugins directory; this is most likely `/usr/lib/nagios/plugins` or `/usr/lib64/nagios/plugins` depending on your plaform.
-
-    cp check_rbltracker.sh /usr/lib/nagios/plugins/
-
-2) make sure `check_rbltracker.sh` is executable:
-
-    chmod +x /usr/lib/nagios/plugins/check_rbltracker.sh
-
+1. Copy `check_rbltracker.sh` into your Nagios plugins directory; this is most likely `/usr/lib/nagios/plugins` or `/usr/lib64/nagios/plugins` depending on your plaform.
+```
+cp check_rbltracker.sh /usr/lib/nagios/plugins/
+```
+2. Make sure `check_rbltracker.sh` is executable:
+```
+chmod +x /usr/lib/nagios/plugins/check_rbltracker.sh
+```
 
 ## Nagios Configuration
 
-1) add a new entry in your commands.cfg file to reference the check_rbltracker.sh script:
-
+1. Add a new entry in your `commands.cfg` file to reference the check_rbltracker.sh script:
+```
     define command{
         command_name    check-rbltracker
         command_line    $USER1$/check_rbltracker.sh $ARG1$ $ARG2$
         }
+```
+> The arguments to `check_rbltracker.sh` is your RBLTracker account SID and auth token, both available via the RBLTracker web portal @ https://rbltracker.com/
 
-  the arguments to `check_rbltracker.sh` is your RBLTracker account SID and auth token, both available via the RBLTracker web portal @ https://rbltracker.com/
-
-2) create a new "no ping" host template that does not include a default ping check against the host. Since this is web service, we only want to check the web request, and not ping:
-
+2. Create a new "no ping" host template that does not include a default ping check against the host. Since this is web service, we only want to check the web request, and not ping:
+```
     define host{
         name                            noping-host    ; The name of this host template
         notifications_enabled           1       ; Host notifications are enabled
@@ -59,25 +59,25 @@ This script returns:
         contact_groups                  admins
         register                        0       ; DONT REGISTER THIS DEFINITION - ITS NOT A REAL HOST, JUST A TEMPLATE!
         }
-
-3) create a new host entry for RBLTracker, using this new noping-host template:
-
+```
+3. Create a new host entry for RBLTracker, using this new `noping-host` template:
+```
     define host {
         use                     noping-host
         host_name               RBLTracker
         alias                   RBLTracker
         }
-
-4) create a new service entry for this new host, using the new check command, and pass the RBLTracker account SID and auth token as the arguments to the command:
-
+```
+4. Create a new service entry for this new host, using the new check command, and pass the RBLTracker account SID and auth token as the arguments to the command:
+```
     define service {
         use                     local-service
         host_name               RBLTracker
         service_description     RBLTracker Web Service Check
         check_command           check-rbltracker!ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX!0000000000000000000000000000000000000000000000000000000000000000
         }
-
-   remember to replace with ACXX string with your account SID, and the 0000 string with the API token, both available from the RBLTracker portal ***
+```
+>Remember to replace with ACXX string with your account SID, and the 0000 string with the API token, both available from the RBLTracker portal.
 
 [rbltracker sign up]:   https://portal.rbltracker.com/signup/
 [rbltracker dev site]:  https://rbltracker.com/docs/api/
